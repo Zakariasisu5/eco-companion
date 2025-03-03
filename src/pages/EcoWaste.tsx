@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Calendar, 
@@ -83,7 +82,7 @@ const EcoWaste = () => {
   const recyclingTips = [
     {
       title: 'Plastic Recycling',
-      description: 'Rinse plastic containers before recycling. Check the recycling symbol (1-7) to ensure it's accepted in your area.',
+      description: 'Rinse plastic containers before recycling. Check the recycling symbol (1-7) to ensure it\'s accepted in your area.',
       icon: Info
     },
     {
