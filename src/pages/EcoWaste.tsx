@@ -6,12 +6,12 @@ import {
   MapPin, 
   Search, 
   Trash2, 
-  RecycleBin, 
   Info, 
   ArrowRight,
   CheckCircle,
   AlertTriangle,
-  Plus
+  Plus,
+  Leaf
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -40,14 +40,14 @@ const EcoWaste = () => {
       type: 'Recycling',
       day: 'Thursday',
       time: '9:00 AM',
-      icon: RecycleBin,
+      icon: Info,
       color: 'text-blue-600 bg-blue-100'
     },
     {
       type: 'Green Waste',
       day: 'First Tuesday',
       time: '8:00 AM',
-      icon: RecycleBin,
+      icon: Leaf,
       color: 'text-green-600 bg-green-100'
     },
     {
@@ -208,7 +208,7 @@ const EcoWaste = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center">
-                  <RecycleBin className="mr-2 h-5 w-5 text-primary" />
+                  <Leaf className="mr-2 h-5 w-5 text-primary" />
                   Recycling Guidelines
                 </CardTitle>
               </CardHeader>
