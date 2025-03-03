@@ -1,138 +1,146 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Session, User } from '@supabase/supabase-js';
 import { toast } from "sonner";
 
-interface User {
+interface UserProfile {
   id: string;
-  name: string;
-  email: string;
-  isAdmin: boolean;
-  image?: string;
+  username?: string;
+  full_name?: string;
+  avatar_url?: string;
 }
 
 interface AuthContextType {
+  session: Session | null;
   user: User | null;
-  isAuthenticated: boolean;
+  profile: UserProfile | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (name: string, email: string, password: string) => Promise<void>;
-  signOut: () => void;
+  signUp: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('eco_user');
-    
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Failed to parse stored user', error);
-        localStorage.removeItem('eco_user');
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setIsLoading(false);
       }
-    }
-    
-    setIsLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
+        
+        setIsLoading(false);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        setProfile(null);
+      } else {
+        setProfile(data);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      setProfile(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
-    setIsLoading(true);
-    
     try {
-      // Simulate API call with a delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       
-      // Mock authentication - in a real app this would be an API call
-      if (email === 'demo@example.com' && password === 'password') {
-        const mockUser = {
-          id: '1',
-          name: 'Demo User',
-          email: 'demo@example.com',
-          isAdmin: false,
-        };
-        
-        setUser(mockUser);
-        localStorage.setItem('eco_user', JSON.stringify(mockUser));
-        toast.success('Successfully signed in!');
-        return;
-      }
-      
-      // Demo admin user
-      if (email === 'admin@example.com' && password === 'admin') {
-        const adminUser = {
-          id: '2',
-          name: 'Zakaria Sisu',
-          email: 'zakariasisu5@gmail.com',
-          isAdmin: true,
-          image: '/lovable-uploads/a8c669ec-763e-4135-b46a-a1500e096cec.png'
-        };
-        
-        setUser(adminUser);
-        localStorage.setItem('eco_user', JSON.stringify(adminUser));
-        toast.success('Successfully signed in as admin!');
-        return;
-      }
-      
-      throw new Error('Invalid email or password');
-    } catch (error) {
-      if (error instanceof Error) {
+      if (error) {
         toast.error(error.message);
-      } else {
-        toast.error('An error occurred during sign in');
+        throw error;
       }
+      
+      toast.success('Signed in successfully!');
+    } catch (error) {
+      console.error('Sign in error:', error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const signUp = async (name: string, email: string, password: string) => {
-    setIsLoading(true);
-    
+  const signUp = async (email: string, password: string) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const { error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+      });
       
-      // Mock user creation - in a real app this would be an API call
-      const newUser = {
-        id: Math.random().toString(36).substr(2, 9),
-        name,
-        email,
-        isAdmin: false,
-      };
-      
-      setUser(newUser);
-      localStorage.setItem('eco_user', JSON.stringify(newUser));
-      toast.success('Account created successfully!');
-    } catch (error) {
-      if (error instanceof Error) {
+      if (error) {
         toast.error(error.message);
-      } else {
-        toast.error('An error occurred during sign up');
+        throw error;
       }
+      
+      toast.success('Signed up successfully! Please check your email for confirmation.');
+    } catch (error) {
+      console.error('Sign up error:', error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const signOut = () => {
-    setUser(null);
-    localStorage.removeItem('eco_user');
-    toast.info('You have been signed out');
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        toast.error(error.message);
+        throw error;
+      }
+      
+      toast.success('Signed out successfully');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      throw error;
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
+        session,
         user,
-        isAuthenticated: !!user,
+        profile,
         isLoading,
         signIn,
         signUp,
