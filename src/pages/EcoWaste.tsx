@@ -6,10 +6,13 @@ import ScheduleTab from '@/components/eco-waste/ScheduleTab';
 import RecyclingTab from '@/components/eco-waste/RecyclingTab';
 import CentersTab from '@/components/eco-waste/CentersTab';
 import TrackingTab from '@/components/eco-waste/TrackingTab';
+import { useLocation } from 'react-router-dom';
 
 const EcoWaste = () => {
+  const location = useLocation();
+  
   return (
-    <PageTransition>
+    <PageTransition location={location.pathname}>
       <div className="container px-4 py-8 max-w-7xl mx-auto space-y-8">
         {/* Page Header */}
         <div>
