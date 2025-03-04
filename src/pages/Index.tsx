@@ -8,6 +8,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import Footer from "@/components/layout/Footer";
+import { useAuth } from "@/context/AuthContext";
 
 const features = [
   {
@@ -44,6 +45,7 @@ const features = [
 
 const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
+  const { isAuthenticated } = useAuth();
   
   // Parallax effect on scroll
   useEffect(() => {
@@ -83,17 +85,28 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: "400ms" }}>
-              <Link to="/signup">
-                <Button size="lg" className="rounded-full w-full sm:w-auto">
-                  Get Started
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button variant="outline" size="lg" className="rounded-full w-full sm:w-auto">
-                  Sign In
-                </Button>
-              </Link>
+              {isAuthenticated ? (
+                <Link to="/eco-waste">
+                  <Button size="lg" className="rounded-full w-full sm:w-auto">
+                    Go to Eco-Waste
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/eco-waste">
+                  <Button size="lg" className="rounded-full w-full sm:w-auto">
+                    Get Started
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              )}
+              {!isAuthenticated && (
+                <Link to="/login">
+                  <Button variant="outline" size="lg" className="rounded-full w-full sm:w-auto">
+                    Sign In
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
           
@@ -199,20 +212,30 @@ const Index = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/signup">
-                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-                    Get Started
-                  </Button>
-                </Link>
-                <Link to="/login">
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="border-white text-white hover:bg-white hover:text-eco-900 w-full sm:w-auto"
-                  >
-                    Sign In
-                  </Button>
-                </Link>
+                {isAuthenticated ? (
+                  <Link to="/eco-waste">
+                    <Button size="lg" variant="secondary" className="w-full sm:w-auto">
+                      Go to Eco-Waste
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/eco-waste">
+                    <Button size="lg" variant="secondary" className="w-full sm:w-auto">
+                      Get Started
+                    </Button>
+                  </Link>
+                )}
+                {!isAuthenticated && (
+                  <Link to="/login">
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="border-white text-white hover:bg-white hover:text-eco-900 w-full sm:w-auto"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
