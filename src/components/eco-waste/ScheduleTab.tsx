@@ -42,6 +42,7 @@ const scheduleItems = [
 
 const ScheduleTab = () => {
   const [customReminders, setCustomReminders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -49,23 +50,36 @@ const ScheduleTab = () => {
     if (!user) {
       return;
     }
+    
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('custom_reminders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('reminder_date', { ascending: true });
 
-    const { data, error } = await supabase
-      .from('custom_reminders')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('reminder_date', { ascending: true });
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch reminders",
+          variant: "destructive",
+        });
+        console.error("Error fetching reminders:", error);
+        return;
+      }
 
-    if (error) {
+      setCustomReminders(data || []);
+    } catch (error) {
+      console.error("Unexpected error fetching reminders:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch reminders",
+        description: "An unexpected error occurred while fetching reminders",
         variant: "destructive",
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    setCustomReminders(data || []);
   };
 
   useEffect(() => {
@@ -103,6 +117,50 @@ const ScheduleTab = () => {
     }
   };
 
+  const handleSetScheduleReminder = (type: string, day: string, time: string) => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please login to set reminders",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Calculate a future date based on the day of the week
+    const now = new Date();
+    const title = `${type} Collection`;
+    const description = `Regular ${type.toLowerCase()} collection on ${day} at ${time}`;
+    
+    // Create a new reminder for the next occurrence
+    const reminderDate = new Date();
+    reminderDate.setDate(now.getDate() + 7); // Set to 1 week from now as an example
+    
+    // Open a dialog or directly create the reminder
+    supabase.from('custom_reminders').insert({
+      title,
+      description,
+      reminder_date: reminderDate.toISOString(),
+      user_id: user.id
+    }).then(({ error }) => {
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to set reminder",
+          variant: "destructive",
+        });
+        console.error("Error setting reminder:", error);
+        return;
+      }
+      
+      toast({
+        title: "Success",
+        description: `Reminder set for ${type}`,
+      });
+      fetchReminders();
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -127,7 +185,11 @@ const ScheduleTab = () => {
                   <span>{item.time}</span>
                 </div>
               </div>
-              <Button variant="ghost" size="sm">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => handleSetScheduleReminder(item.type, item.day, item.time)}
+              >
                 Set Reminder
               </Button>
             </div>
@@ -135,33 +197,41 @@ const ScheduleTab = () => {
           
           {user ? (
             <>
-              {customReminders.map((reminder) => (
-                <div key={reminder.id} className="flex items-center p-3 border rounded-lg">
-                  <div className="p-2 rounded-full bg-primary/10 text-primary mr-4">
-                    <BellRing className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium">{reminder.title}</h3>
-                    {reminder.description && (
-                      <p className="text-sm text-foreground/70">{reminder.description}</p>
-                    )}
-                    <div className="flex items-center text-sm text-foreground/70 mt-1">
-                      <Calendar className="h-3.5 w-3.5 mr-1" />
-                      <span>{format(new Date(reminder.reminder_date), 'PPP')}</span>
-                      <Clock className="h-3.5 w-3.5 ml-3 mr-1" />
-                      <span>{format(new Date(reminder.reminder_date), 'p')}</span>
+              {isLoading ? (
+                <div className="text-center p-4">Loading reminders...</div>
+              ) : customReminders.length > 0 ? (
+                customReminders.map((reminder) => (
+                  <div key={reminder.id} className="flex items-center p-3 border rounded-lg">
+                    <div className="p-2 rounded-full bg-primary/10 text-primary mr-4">
+                      <BellRing className="h-5 w-5" />
                     </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium">{reminder.title}</h3>
+                      {reminder.description && (
+                        <p className="text-sm text-foreground/70">{reminder.description}</p>
+                      )}
+                      <div className="flex items-center text-sm text-foreground/70 mt-1">
+                        <Calendar className="h-3.5 w-3.5 mr-1" />
+                        <span>{format(new Date(reminder.reminder_date), 'PPP')}</span>
+                        <Clock className="h-3.5 w-3.5 ml-3 mr-1" />
+                        <span>{format(new Date(reminder.reminder_date), 'p')}</span>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleDeleteReminder(reminder.id)}
+                      className="text-destructive hover:text-destructive/90"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => handleDeleteReminder(reminder.id)}
-                    className="text-destructive hover:text-destructive/90"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                ))
+              ) : (
+                <div className="text-center p-4 text-muted-foreground border border-dashed rounded-lg">
+                  No custom reminders yet. Add one below!
                 </div>
-              ))}
+              )}
               
               <AddReminderDialog onReminderAdded={fetchReminders} />
             </>

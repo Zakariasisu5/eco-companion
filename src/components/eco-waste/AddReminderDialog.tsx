@@ -16,6 +16,7 @@ export const AddReminderDialog = ({ onReminderAdded }: { onReminderAdded: () => 
   const [description, setDescription] = useState("");
   const [reminderDate, setReminderDate] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -32,6 +33,9 @@ export const AddReminderDialog = ({ onReminderAdded }: { onReminderAdded: () => 
     }
     
     try {
+      setIsSubmitting(true);
+      
+      // Fix: Use object format instead of array and include user_id
       const { error } = await supabase.from('custom_reminders').insert({
         title,
         description,
@@ -52,11 +56,14 @@ export const AddReminderDialog = ({ onReminderAdded }: { onReminderAdded: () => 
       setReminderDate("");
       onReminderAdded();
     } catch (error) {
+      console.error("Error adding reminder:", error);
       toast({
         title: "Error",
         description: "Failed to add reminder",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -101,7 +108,9 @@ export const AddReminderDialog = ({ onReminderAdded }: { onReminderAdded: () => 
             />
           </div>
           <div className="flex justify-end">
-            <Button type="submit">Add Reminder</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Adding..." : "Add Reminder"}
+            </Button>
           </div>
         </form>
       </DialogContent>

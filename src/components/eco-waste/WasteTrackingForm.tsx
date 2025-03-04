@@ -14,6 +14,7 @@ export const WasteTrackingForm = ({ onSubmit }: { onSubmit: () => void }) => {
   const [amount, setAmount] = useState('');
   const [unit, setUnit] = useState('kg');
   const [notes, setNotes] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -29,7 +30,19 @@ export const WasteTrackingForm = ({ onSubmit }: { onSubmit: () => void }) => {
       return;
     }
 
+    if (!wasteType || !amount) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
+      setIsSubmitting(true);
+      
+      // Fix: Use object format instead of array and include user_id
       const { error } = await supabase.from('waste_tracking').insert({
         waste_type: wasteType,
         amount: Number(amount),
@@ -51,11 +64,14 @@ export const WasteTrackingForm = ({ onSubmit }: { onSubmit: () => void }) => {
       setNotes('');
       onSubmit();
     } catch (error) {
+      console.error("Error adding waste tracking entry:", error);
       toast({
         title: "Error",
         description: "Failed to add waste tracking entry",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -114,7 +130,9 @@ export const WasteTrackingForm = ({ onSubmit }: { onSubmit: () => void }) => {
         />
       </div>
 
-      <Button type="submit">Add Entry</Button>
+      <Button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Adding..." : "Add Entry"}
+      </Button>
     </form>
   );
 };
