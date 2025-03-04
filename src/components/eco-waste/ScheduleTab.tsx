@@ -1,8 +1,12 @@
 
-import React from 'react';
-import { Calendar, Clock, Plus, Trash2, Info, Leaf, AlertTriangle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Calendar, Clock, Trash2, Info, Leaf, AlertTriangle, BellRing } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { AddReminderDialog } from './AddReminderDialog';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
+import { format } from 'date-fns';
 
 const scheduleItems = [
   {
@@ -36,6 +40,53 @@ const scheduleItems = [
 ];
 
 const ScheduleTab = () => {
+  const [customReminders, setCustomReminders] = useState<any[]>([]);
+  const { toast } = useToast();
+
+  const fetchReminders = async () => {
+    const { data, error } = await supabase
+      .from('custom_reminders')
+      .select('*')
+      .order('reminder_date', { ascending: true });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch reminders",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setCustomReminders(data || []);
+  };
+
+  useEffect(() => {
+    fetchReminders();
+  }, []);
+
+  const handleDeleteReminder = async (id: string) => {
+    const { error } = await supabase
+      .from('custom_reminders')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete reminder",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Reminder deleted successfully",
+    });
+    fetchReminders();
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -66,10 +117,35 @@ const ScheduleTab = () => {
             </div>
           ))}
           
-          <Button variant="outline" className="w-full">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Custom Reminder
-          </Button>
+          {customReminders.map((reminder) => (
+            <div key={reminder.id} className="flex items-center p-3 border rounded-lg">
+              <div className="p-2 rounded-full bg-primary/10 text-primary mr-4">
+                <BellRing className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-medium">{reminder.title}</h3>
+                {reminder.description && (
+                  <p className="text-sm text-foreground/70">{reminder.description}</p>
+                )}
+                <div className="flex items-center text-sm text-foreground/70 mt-1">
+                  <Calendar className="h-3.5 w-3.5 mr-1" />
+                  <span>{format(new Date(reminder.reminder_date), 'PPP')}</span>
+                  <Clock className="h-3.5 w-3.5 ml-3 mr-1" />
+                  <span>{format(new Date(reminder.reminder_date), 'p')}</span>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => handleDeleteReminder(reminder.id)}
+                className="text-destructive hover:text-destructive/90"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          
+          <AddReminderDialog onReminderAdded={fetchReminders} />
         </CardContent>
       </Card>
       

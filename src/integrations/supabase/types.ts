@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      custom_reminders: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          reminder_date: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reminder_date: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reminder_date?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_reminders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feed_consumption: {
         Row: {
           consumption_date: string
@@ -309,6 +347,104 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      recycling_centers: {
+        Row: {
+          accepted_materials: string[] | null
+          address: string
+          contact: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          operating_hours: string | null
+        }
+        Insert: {
+          accepted_materials?: string[] | null
+          address: string
+          contact?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          operating_hours?: string | null
+        }
+        Update: {
+          accepted_materials?: string[] | null
+          address?: string
+          contact?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          operating_hours?: string | null
+        }
+        Relationships: []
+      }
+      recycling_mistakes: {
+        Row: {
+          description: string
+          id: string
+          impact_level: string
+          solution: string
+          title: string
+        }
+        Insert: {
+          description: string
+          id?: string
+          impact_level: string
+          solution: string
+          title: string
+        }
+        Update: {
+          description?: string
+          id?: string
+          impact_level?: string
+          solution?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      waste_tracking: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          notes: string | null
+          tracking_date: string
+          unit: string
+          user_id: string
+          waste_type: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          tracking_date?: string
+          unit: string
+          user_id: string
+          waste_type: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          tracking_date?: string
+          unit?: string
+          user_id?: string
+          waste_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waste_tracking_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

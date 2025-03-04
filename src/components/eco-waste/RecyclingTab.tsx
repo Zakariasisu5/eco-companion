@@ -1,8 +1,8 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Leaf, Info, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
 
 const recyclingTips = [
   {
@@ -23,6 +23,19 @@ const recyclingTips = [
 ];
 
 const RecyclingTab = () => {
+  const [mistakes, setMistakes] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchMistakes = async () => {
+      const { data } = await supabase
+        .from('recycling_mistakes')
+        .select('*');
+      setMistakes(data || []);
+    };
+
+    fetchMistakes();
+  }, []);
+
   return (
     <div className="space-y-6">
       <Card>
@@ -67,6 +80,47 @@ const RecyclingTab = () => {
               </li>
             </ul>
           </div>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Common Recycling Mistakes</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {mistakes.map((mistake, index) => (
+            <div key={index} className="p-4 border rounded-lg">
+              <div className="flex items-start gap-3">
+                <div className={`p-2 rounded-full ${
+                  mistake.impact_level === 'High' ? 'bg-red-100 text-red-600' :
+                  mistake.impact_level === 'Medium' ? 'bg-yellow-100 text-yellow-600' :
+                  'bg-blue-100 text-blue-600'
+                }`}>
+                  <AlertTriangle className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium">{mistake.title}</h3>
+                    <Badge variant={
+                      mistake.impact_level === 'High' ? 'destructive' :
+                      mistake.impact_level === 'Medium' ? 'default' :
+                      'secondary'
+                    }>
+                      {mistake.impact_level} Impact
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-foreground/70 mt-1">{mistake.description}</p>
+                  <div className="mt-3 p-3 bg-primary/5 rounded-lg">
+                    <div className="flex items-center text-primary">
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      <span className="font-medium">Solution:</span>
+                    </div>
+                    <p className="text-sm mt-1">{mistake.solution}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </CardContent>
       </Card>
       

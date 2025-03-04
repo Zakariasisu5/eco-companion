@@ -1,75 +1,67 @@
-
-import React from 'react';
-import { Trash2, Plus, ArrowRight, Leaf } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Trash2, Plus, ArrowRight, Leaf, ArrowUp, ArrowDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-
-const wasteTracking = [
-  {
-    category: 'Recycling',
-    amount: '12.5 kg',
-    change: '+2.3 kg',
-    trend: 'up'
-  },
-  {
-    category: 'General Waste',
-    amount: '8.2 kg',
-    change: '-1.5 kg',
-    trend: 'down' 
-  },
-  {
-    category: 'Compost',
-    amount: '4.7 kg',
-    change: '+0.8 kg',
-    trend: 'up'
-  }
-];
+import { WasteTrackingForm } from './WasteTrackingForm';
+import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
 
 const TrackingTab = () => {
+  const [wasteEntries, setWasteEntries] = useState<any[]>([]);
+
+  const fetchWasteTracking = async () => {
+    const { data } = await supabase
+      .from('waste_tracking')
+      .select('*')
+      .order('tracking_date', { ascending: false });
+    
+    setWasteEntries(data || []);
+  };
+
+  useEffect(() => {
+    fetchWasteTracking();
+  }, []);
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="text-lg flex items-center">
             <Trash2 className="mr-2 h-5 w-5 text-primary" />
-            Waste Tracking
+            Add New Waste Entry
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-            {wasteTracking.map((item, index) => (
-              <div key={index} className="p-4 border rounded-lg">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-medium">{item.category}</h3>
-                  <div className={`text-sm font-medium px-2 py-1 rounded-full ${
-                    item.trend === 'down' 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-blue-100 text-blue-700'
-                  }`}>
-                    {item.change}
-                  </div>
-                </div>
-                <p className="text-2xl font-bold mt-2">{item.amount}</p>
-                <div className="mt-3 pt-3 border-t">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-foreground/70">Monthly goal: 20% reduction</span>
-                    <span className="font-medium">45% complete</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2 mt-2">
-                    <div className="bg-primary h-2 rounded-full" style={{ width: "45%" }}></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          <Button className="w-full">
-            <Plus className="h-4 w-4 mr-2" />
-            Log New Waste
-          </Button>
+        <CardContent>
+          <WasteTrackingForm onSubmit={fetchWasteTracking} />
         </CardContent>
       </Card>
-      
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Recent Entries</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {wasteEntries.map((entry) => (
+            <div key={entry.id} className="p-4 border rounded-lg">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium">{entry.waste_type}</h3>
+                <span className="text-sm text-foreground/70">
+                  {format(new Date(entry.tracking_date), 'PPP')}
+                </span>
+              </div>
+              <div className="mt-2 flex items-center justify-between">
+                <div className="text-2xl font-bold">
+                  {entry.amount} {entry.unit}
+                </div>
+              </div>
+              {entry.notes && (
+                <p className="mt-2 text-sm text-foreground/70">{entry.notes}</p>
+              )}
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Eco Rewards</CardTitle>
