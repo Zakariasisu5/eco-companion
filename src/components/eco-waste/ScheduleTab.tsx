@@ -7,6 +7,7 @@ import { AddReminderDialog } from './AddReminderDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns';
+import { useAuth } from '@/context/AuthContext';
 
 const scheduleItems = [
   {
@@ -42,11 +43,17 @@ const scheduleItems = [
 const ScheduleTab = () => {
   const [customReminders, setCustomReminders] = useState<any[]>([]);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const fetchReminders = async () => {
+    if (!user) {
+      return;
+    }
+
     const { data, error } = await supabase
       .from('custom_reminders')
       .select('*')
+      .eq('user_id', user.id)
       .order('reminder_date', { ascending: true });
 
     if (error) {
@@ -63,28 +70,37 @@ const ScheduleTab = () => {
 
   useEffect(() => {
     fetchReminders();
-  }, []);
+  }, [user]);
 
   const handleDeleteReminder = async (id: string) => {
-    const { error } = await supabase
-      .from('custom_reminders')
-      .delete()
-      .eq('id', id);
+    try {
+      const { error } = await supabase
+        .from('custom_reminders')
+        .delete()
+        .eq('id', id);
 
-    if (error) {
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete reminder",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Reminder deleted successfully",
+      });
+      fetchReminders();
+    } catch (error) {
+      console.error("Error deleting reminder:", error);
       toast({
         title: "Error",
-        description: "Failed to delete reminder",
+        description: "An unexpected error occurred while deleting the reminder",
         variant: "destructive",
       });
-      return;
     }
-
-    toast({
-      title: "Success",
-      description: "Reminder deleted successfully",
-    });
-    fetchReminders();
   };
 
   return (
@@ -117,35 +133,45 @@ const ScheduleTab = () => {
             </div>
           ))}
           
-          {customReminders.map((reminder) => (
-            <div key={reminder.id} className="flex items-center p-3 border rounded-lg">
-              <div className="p-2 rounded-full bg-primary/10 text-primary mr-4">
-                <BellRing className="h-5 w-5" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-medium">{reminder.title}</h3>
-                {reminder.description && (
-                  <p className="text-sm text-foreground/70">{reminder.description}</p>
-                )}
-                <div className="flex items-center text-sm text-foreground/70 mt-1">
-                  <Calendar className="h-3.5 w-3.5 mr-1" />
-                  <span>{format(new Date(reminder.reminder_date), 'PPP')}</span>
-                  <Clock className="h-3.5 w-3.5 ml-3 mr-1" />
-                  <span>{format(new Date(reminder.reminder_date), 'p')}</span>
+          {user ? (
+            <>
+              {customReminders.map((reminder) => (
+                <div key={reminder.id} className="flex items-center p-3 border rounded-lg">
+                  <div className="p-2 rounded-full bg-primary/10 text-primary mr-4">
+                    <BellRing className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-medium">{reminder.title}</h3>
+                    {reminder.description && (
+                      <p className="text-sm text-foreground/70">{reminder.description}</p>
+                    )}
+                    <div className="flex items-center text-sm text-foreground/70 mt-1">
+                      <Calendar className="h-3.5 w-3.5 mr-1" />
+                      <span>{format(new Date(reminder.reminder_date), 'PPP')}</span>
+                      <Clock className="h-3.5 w-3.5 ml-3 mr-1" />
+                      <span>{format(new Date(reminder.reminder_date), 'p')}</span>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => handleDeleteReminder(reminder.id)}
+                    className="text-destructive hover:text-destructive/90"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => handleDeleteReminder(reminder.id)}
-                className="text-destructive hover:text-destructive/90"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              ))}
+              
+              <AddReminderDialog onReminderAdded={fetchReminders} />
+            </>
+          ) : (
+            <div className="text-center p-4 border rounded-lg border-dashed">
+              <p className="text-muted-foreground">
+                Log in to add and manage custom reminders
+              </p>
             </div>
-          ))}
-          
-          <AddReminderDialog onReminderAdded={fetchReminders} />
+          )}
         </CardContent>
       </Card>
       
