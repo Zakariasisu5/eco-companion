@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { 
   Menu, 
@@ -21,14 +21,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 export const Header = () => {
-  const { user, profile, isLoading, signOut } = useAuth();
+  const { user, profile, isLoading, isAuthenticated, signOut } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
@@ -52,6 +52,11 @@ export const Header = () => {
   useEffect(() => {
     closeMenu();
   }, [location.pathname]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
   
   return (
     <header
@@ -89,7 +94,7 @@ export const Header = () => {
           {/* Auth Buttons or User Menu */}
           <div className="flex items-center gap-2">
             {!isLoading && (
-              user ? (
+              isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -100,15 +105,15 @@ export const Header = () => {
                         <AvatarFallback className="bg-primary text-primary-foreground">
                           {profile?.full_name 
                             ? profile.full_name.substring(0, 2).toUpperCase() 
-                            : user.email?.substring(0, 2).toUpperCase() || "U"}
+                            : user?.email?.substring(0, 2).toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 mt-2">
                     <div className="flex flex-col p-2 gap-2">
-                      <div className="font-medium">{profile?.full_name || user.email?.split('@')[0]}</div>
-                      <div className="text-xs text-foreground/70">{user.email}</div>
+                      <div className="font-medium">{profile?.full_name || user?.email?.split('@')[0]}</div>
+                      <div className="text-xs text-foreground/70">{user?.email}</div>
                     </div>
                     <DropdownMenuSeparator />
                     <Link to="/profile">
@@ -118,7 +123,7 @@ export const Header = () => {
                       </DropdownMenuItem>
                     </Link>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
+                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Sign out</span>
                     </DropdownMenuItem>
@@ -178,12 +183,12 @@ export const Header = () => {
             </Link>
           ))}
           
-          {user ? (
+          {isAuthenticated ? (
             <Button 
               variant="outline" 
               className="mt-4 w-full justify-start"
               onClick={() => {
-                signOut();
+                handleSignOut();
                 closeMenu();
               }}
             >
