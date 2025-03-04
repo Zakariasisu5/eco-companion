@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/context/AuthContext';
 
 export const WasteTrackingForm = ({ onSubmit }: { onSubmit: () => void }) => {
   const [wasteType, setWasteType] = useState('');
@@ -14,19 +15,28 @@ export const WasteTrackingForm = ({ onSubmit }: { onSubmit: () => void }) => {
   const [unit, setUnit] = useState('kg');
   const [notes, setNotes] = useState('');
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You need to be logged in to track waste",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      const { error } = await supabase.from('waste_tracking').insert([
-        {
-          waste_type: wasteType,
-          amount: Number(amount),
-          unit,
-          notes,
-        }
-      ]);
+      const { error } = await supabase.from('waste_tracking').insert({
+        waste_type: wasteType,
+        amount: Number(amount),
+        unit,
+        notes,
+        user_id: user.id
+      });
 
       if (error) throw error;
 

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Plus } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export const AddReminderDialog = ({ onReminderAdded }: { onReminderAdded: () => void }) => {
   const [title, setTitle] = useState("");
@@ -16,18 +17,27 @@ export const AddReminderDialog = ({ onReminderAdded }: { onReminderAdded: () => 
   const [reminderDate, setReminderDate] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You need to be logged in to add reminders",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
-      const { error } = await supabase.from('custom_reminders').insert([
-        {
-          title,
-          description,
-          reminder_date: new Date(reminderDate).toISOString(),
-        }
-      ]);
+      const { error } = await supabase.from('custom_reminders').insert({
+        title,
+        description,
+        reminder_date: new Date(reminderDate).toISOString(),
+        user_id: user.id
+      });
 
       if (error) throw error;
 
