@@ -16,6 +16,7 @@ interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   isLoading: boolean;
+  isAuthenticated: boolean; // Add this property
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -28,12 +29,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      setIsAuthenticated(!!session);
       if (session?.user) {
         fetchProfile(session.user.id);
       } else {
@@ -46,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        setIsAuthenticated(!!session);
         
         if (session?.user) {
           await fetchProfile(session.user.id);
@@ -142,6 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         profile,
         isLoading,
+        isAuthenticated,
         signIn,
         signUp,
         signOut,

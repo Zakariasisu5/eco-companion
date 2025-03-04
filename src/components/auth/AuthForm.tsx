@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,7 +24,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -48,10 +47,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
   
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    
-    if (mode === 'signup' && !formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    }
     
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
@@ -82,7 +77,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
       if (mode === 'signin') {
         await signIn(formData.email, formData.password);
       } else {
-        await signUp(formData.name, formData.email, formData.password);
+        await signUp(formData.email, formData.password);
       }
       navigate('/dashboard');
     } catch (error) {
@@ -107,22 +102,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === 'signup' && (
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="John Doe"
-                value={formData.name}
-                onChange={handleChange}
-                disabled={isLoading}
-                className={errors.name ? 'border-red-500' : ''}
-              />
-              {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
-            </div>
-          )}
-          
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input

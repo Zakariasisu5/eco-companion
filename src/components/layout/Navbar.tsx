@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/context/AuthContext';
 import { 
   Menu, 
   X, 
   LogIn,
-  User,
+  User as UserIcon,
   LogOut,
   Leaf
 } from 'lucide-react';
@@ -21,7 +21,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export const Navbar = () => {
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, profile, isAuthenticated, signOut } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
@@ -87,24 +87,26 @@ export const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10">
-                      {user?.image ? (
-                        <AvatarImage src={user.image} alt={user.name} />
+                      {profile?.avatar_url ? (
+                        <AvatarImage src={profile.avatar_url} alt={profile.full_name || ""} />
                       ) : null}
                       <AvatarFallback className="bg-primary text-primary-foreground">
-                        {user?.name.substring(0, 2).toUpperCase()}
+                        {profile?.full_name 
+                          ? profile.full_name.substring(0, 2).toUpperCase() 
+                          : user?.email?.substring(0, 2).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 mt-2 frost-glass">
                   <div className="flex flex-col p-2 gap-2">
-                    <div className="font-medium">{user?.name}</div>
+                    <div className="font-medium">{profile?.full_name || user?.email?.split('@')[0]}</div>
                     <div className="text-xs text-foreground/70">{user?.email}</div>
                   </div>
                   <DropdownMenuSeparator />
                   <Link to="/profile">
                     <DropdownMenuItem className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
+                      <UserIcon className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
                   </Link>
