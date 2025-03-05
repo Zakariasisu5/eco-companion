@@ -1,81 +1,69 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LogOut, LogIn } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/AuthContext';
-import { NavLink } from '@/components/layout/NavLink';
+import { 
+  LayoutDashboard, 
+  Recycle, 
+  Leaf, 
+  Car, 
+  Zap, 
+  TreePine,
+  User
+} from 'lucide-react';
 
-interface NavLinkItem {
-  path: string;
-  label: string;
-  icon: React.ReactNode;
-}
-
-interface MobileNavProps {
-  isOpen: boolean;
-  links: NavLinkItem[];
-  onClose: () => void;
-  onSignOut: () => Promise<void>;
-}
-
-export const MobileNav = ({ 
-  isOpen, 
-  links, 
-  onClose,
-  onSignOut 
-}: MobileNavProps) => {
-  const { isAuthenticated } = useAuth();
+export const MobileNav = () => {
   const location = useLocation();
   
+  const navItems = [
+    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/eco-waste', label: 'Waste', icon: Recycle },
+    { path: '/sustainable-living', label: 'Living', icon: Leaf },
+    { path: '/green-commute', label: 'Commute', icon: Car },
+    { path: '/energy-saver', label: 'Energy', icon: Zap },
+    { path: '/tree-planting', label: 'Trees', icon: TreePine },
+    { path: '/profile', label: 'Profile', icon: User },
+  ];
+  
   return (
-    <div
-      className={`fixed inset-0 top-16 bg-background z-40 transform transition-transform duration-300 ease-in-out ${
-        isOpen ? 'translate-x-0' : 'translate-x-full'
-      } md:hidden`}
-    >
-      <nav className="container h-full flex flex-col gap-2 p-4">
-        {links.map(link => (
-          <NavLink
-            key={link.path}
-            to={link.path}
-            isActive={location.pathname === link.path}
-            onClick={onClose}
-            className="py-3 px-4 rounded-md"
+    <div className="mobile-navbar md:hidden frost-glass border-t py-2">
+      <div className="grid grid-cols-4 gap-1">
+        {navItems.slice(0, 4).map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-md text-xs ${
+              location.pathname === item.path
+                ? 'text-primary font-medium'
+                : 'text-foreground/60'
+            }`}
           >
-            {link.icon}
-            {link.label}
-          </NavLink>
+            <item.icon className={`h-5 w-5 mb-1 ${
+              location.pathname === item.path ? 'text-primary' : 'text-foreground/60'
+            }`} />
+            {item.label}
+          </Link>
         ))}
-        
-        {isAuthenticated ? (
-          <Button 
-            variant="outline" 
-            className="mt-4 w-full justify-start"
-            onClick={() => {
-              onSignOut();
-              onClose();
-            }}
+      </div>
+      
+      {/* Second row for remaining items */}
+      <div className="grid grid-cols-3 gap-1 mt-1">
+        {navItems.slice(4).map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-md text-xs ${
+              location.pathname === item.path
+                ? 'text-primary font-medium'
+                : 'text-foreground/60'
+            }`}
           >
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign out
-          </Button>
-        ) : (
-          <div className="mt-4 flex flex-col gap-2">
-            <Link to="/login" onClick={onClose}>
-              <Button variant="outline" className="w-full justify-start">
-                <LogIn className="mr-2 h-4 w-4" />
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/signup" onClick={onClose}>
-              <Button variant="default" className="w-full justify-start">
-                Sign Up
-              </Button>
-            </Link>
-          </div>
-        )}
-      </nav>
+            <item.icon className={`h-5 w-5 mb-1 ${
+              location.pathname === item.path ? 'text-primary' : 'text-foreground/60'
+            }`} />
+            {item.label}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 };

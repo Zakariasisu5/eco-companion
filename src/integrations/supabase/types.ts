@@ -405,36 +405,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ttfpp_profiles: {
-        Row: {
-          avatar_url: string | null
-          created_at: string | null
-          email: string | null
-          full_name: string | null
-          id: string
-          updated_at: string | null
-          user_role: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string | null
-          email?: string | null
-          full_name?: string | null
-          id: string
-          updated_at?: string | null
-          user_role?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string | null
-          email?: string | null
-          full_name?: string | null
-          id?: string
-          updated_at?: string | null
-          user_role?: string | null
-        }
-        Relationships: []
-      }
       waste_tracking: {
         Row: {
           amount: number
