@@ -2,7 +2,7 @@
 
 ## Project info
 
-### **URL**: 
+### **URL**: https://green-living-companion.vercel.app/
 ...
 
 ### 1. **Sustainable Living Tips**:
