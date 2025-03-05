@@ -3,6 +3,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { NavLink } from '@/components/layout/NavLink';
+import { Recycle, Leaf, Car, Zap, TreePine } from 'lucide-react';
 
 interface NavLinkItem {
   path: string;
@@ -26,7 +27,7 @@ export const DesktopNav = ({ links }: DesktopNavProps) => {
           isActive={location.pathname === link.path}
         >
           {link.icon}
-          {link.label}
+          <span className="ml-2">{link.label}</span>
         </NavLink>
       ))}
     </nav>
