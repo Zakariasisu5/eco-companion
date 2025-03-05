@@ -25,7 +25,7 @@ export const Footer = () => {
             <h3 className="text-base font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/eco-waste" className="text-sm text-foreground/70 hover:text-primary transition-colors">
+                <Link to="/dashboard" className="text-sm text-foreground/70 hover:text-primary transition-colors">
                   Dashboard
                 </Link>
               </li>
@@ -35,22 +35,22 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/eco-waste" className="text-sm text-foreground/70 hover:text-primary transition-colors">
+                <Link to="/sustainable-living" className="text-sm text-foreground/70 hover:text-primary transition-colors">
                   Sustainable Living Guide
                 </Link>
               </li>
               <li>
-                <Link to="/eco-waste" className="text-sm text-foreground/70 hover:text-primary transition-colors">
+                <Link to="/green-commute" className="text-sm text-foreground/70 hover:text-primary transition-colors">
                   Green Commute Planner
                 </Link>
               </li>
               <li>
-                <Link to="/eco-waste" className="text-sm text-foreground/70 hover:text-primary transition-colors">
+                <Link to="/energy-saver" className="text-sm text-foreground/70 hover:text-primary transition-colors">
                   Energy Saver
                 </Link>
               </li>
               <li>
-                <Link to="/eco-waste" className="text-sm text-foreground/70 hover:text-primary transition-colors">
+                <Link to="/tree-planting" className="text-sm text-foreground/70 hover:text-primary transition-colors">
                   Tree Planting Tracker
                 </Link>
               </li>

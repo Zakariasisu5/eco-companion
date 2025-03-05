@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Leaf, Recycle, Zap, Car, TreePine, BarChart } from "lucide-react";
@@ -46,6 +47,7 @@ const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated } = useAuth();
   
+  // Parallax effect on scroll
   useEffect(() => {
     const handleScroll = () => {
       if (heroRef.current) {
@@ -61,9 +63,12 @@ const Index = () => {
   
   return (
     <>
+      {/* Hero Section */}
       <div className="relative min-h-screen flex flex-col">
+        {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-eco-50 via-white to-white pointer-events-none" />
         
+        {/* Hero content */}
         <div className="relative flex-1 flex flex-col items-center justify-center text-center px-4 pt-20 pb-12 overflow-hidden">
           <div ref={heroRef} className="w-full max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-primary/10 rounded-full px-4 py-1.5 text-sm font-medium text-primary mb-6 animate-pulse-slow">
@@ -83,7 +88,7 @@ const Index = () => {
               {isAuthenticated ? (
                 <Link to="/eco-waste">
                   <Button size="lg" className="rounded-full w-full sm:w-auto">
-                    Get Started
+                    Go to Eco-Waste
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
@@ -105,6 +110,7 @@ const Index = () => {
             </div>
           </div>
           
+          {/* Scroll indicator */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
             <div className="w-6 h-10 rounded-full border-2 border-primary flex items-start justify-center p-1">
               <div className="w-1 h-2 bg-primary rounded-full animate-pulse-slow" />
@@ -113,6 +119,7 @@ const Index = () => {
         </div>
       </div>
       
+      {/* Features Section */}
       <section className="py-20 bg-white" id="features">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -139,6 +146,7 @@ const Index = () => {
         </div>
       </section>
       
+      {/* Stats Section */}
       <section className="py-20 bg-gradient-to-b from-white to-eco-50/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -177,9 +185,11 @@ const Index = () => {
         </div>
       </section>
       
+      {/* CTA Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="bg-gradient-to-r from-eco-900 to-eco-800 rounded-2xl p-8 md:p-12 text-white overflow-hidden relative">
+            {/* Background pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-0 left-0 w-full h-full">
                 <svg width="100%" height="100%" viewBox="0 0 400 400" fill="none">
@@ -205,7 +215,7 @@ const Index = () => {
                 {isAuthenticated ? (
                   <Link to="/eco-waste">
                     <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-                      Get Started
+                      Go to Eco-Waste
                     </Button>
                   </Link>
                 ) : (
@@ -232,6 +242,7 @@ const Index = () => {
         </div>
       </section>
       
+      {/* Footer */}
       <Footer />
     </>
   );
