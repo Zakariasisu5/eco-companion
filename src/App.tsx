@@ -11,6 +11,10 @@ import EcoWaste from "./pages/EcoWaste";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Header from "./components/layout/Header";
+import SustainableLiving from "./pages/SustainableLiving";
+import GreenCommute from "./pages/GreenCommute";
+import EnergySaver from "./pages/EnergySaver";
+import TreePlanting from "./pages/TreePlanting";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +30,10 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/eco-waste" element={<EcoWaste />} />
+              <Route path="/sustainable-living" element={<SustainableLiving />} />
+              <Route path="/green-commute" element={<GreenCommute />} />
+              <Route path="/energy-saver" element={<EnergySaver />} />
+              <Route path="/tree-planting" element={<TreePlanting />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
