@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { MobileNav } from './MobileNav';
 
 export const Navbar = () => {
   const { user, profile, isAuthenticated, signOut } = useAuth();
@@ -140,29 +141,8 @@ export const Navbar = () => {
         </div>
       </div>
       
-      {/* Mobile Menu */}
-      <div
-        className={`fixed inset-0 top-16 bg-background z-40 transform transition-transform duration-300 ease-in-out ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        } md:hidden`}
-      >
-        <nav className="container h-full flex flex-col gap-2 p-4">
-          {links.map(link => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`block py-3 px-4 rounded-md ${
-                location.pathname === link.path
-                  ? 'bg-primary/10 text-primary font-medium'
-                  : 'text-foreground/70 hover:bg-primary/5'
-              } transition-colors`}
-              onClick={closeMenu}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-      </div>
+      {/* Mobile Navigation */}
+      <MobileNav isOpen={isMenuOpen} onClose={closeMenu} onSignOut={signOut} />
     </header>
   );
 };

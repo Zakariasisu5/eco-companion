@@ -11,7 +11,13 @@ import {
   User
 } from 'lucide-react';
 
-export const MobileNav = () => {
+export interface MobileNavProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSignOut?: () => void;
+}
+
+export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, onSignOut }) => {
   const location = useLocation();
   
   const navItems = [
@@ -23,6 +29,8 @@ export const MobileNav = () => {
     { path: '/tree-planting', label: 'Trees', icon: TreePine },
     { path: '/profile', label: 'Profile', icon: User },
   ];
+  
+  if (!isOpen) return null;
   
   return (
     <div className="mobile-navbar md:hidden frost-glass border-t py-2">
@@ -36,6 +44,7 @@ export const MobileNav = () => {
                 ? 'text-primary font-medium'
                 : 'text-foreground/60'
             }`}
+            onClick={onClose}
           >
             <item.icon className={`h-5 w-5 mb-1 ${
               location.pathname === item.path ? 'text-primary' : 'text-foreground/60'
@@ -56,6 +65,7 @@ export const MobileNav = () => {
                 ? 'text-primary font-medium'
                 : 'text-foreground/60'
             }`}
+            onClick={onClose}
           >
             <item.icon className={`h-5 w-5 mb-1 ${
               location.pathname === item.path ? 'text-primary' : 'text-foreground/60'
@@ -64,6 +74,20 @@ export const MobileNav = () => {
           </Link>
         ))}
       </div>
+      
+      {onSignOut && (
+        <div className="mt-4 px-2">
+          <button 
+            onClick={() => {
+              onSignOut();
+              onClose();
+            }}
+            className="w-full py-2 text-sm text-center text-foreground/80 hover:text-primary"
+          >
+            Sign Out
+          </button>
+        </div>
+      )}
     </div>
   );
 };
