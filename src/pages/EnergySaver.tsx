@@ -1,6 +1,5 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Zap, Lightbulb, BarChart, Clock } from "lucide-react";
 import Footer from "@/components/layout/Footer";
@@ -26,7 +25,7 @@ const EnergySaver = () => {
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
-          className="max-w-4xl mx-auto"
+          className="max-w-5xl mx-auto"
         >
           <TabsList className="grid grid-cols-3 mb-8">
             <TabsTrigger value="usage" className="flex items-center gap-2">
