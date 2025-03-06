@@ -10,7 +10,10 @@ import {
   LogOut,
   Leaf,
   Home,
-  Recycle
+  Recycle,
+  ZapIcon,
+  Car,
+  TreePine
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -36,6 +39,10 @@ export const Header = () => {
   const links = [
     { path: '/', label: 'Home', icon: <Home className="h-4 w-4 mr-2" /> },
     { path: '/eco-waste', label: 'Eco-Waste', icon: <Recycle className="h-4 w-4 mr-2" /> },
+    { path: '/sustainable-living', label: 'Sustainable Living', icon: <Leaf className="h-4 w-4 mr-2" /> },
+    { path: '/green-commute', label: 'Green Commute', icon: <Car className="h-4 w-4 mr-2" /> },
+    { path: '/energy-saver', label: 'Energy Saver', icon: <ZapIcon className="h-4 w-4 mr-2" /> },
+    { path: '/tree-planting', label: 'Tree Planting', icon: <TreePine className="h-4 w-4 mr-2" /> },
   ];
   
   useEffect(() => {
