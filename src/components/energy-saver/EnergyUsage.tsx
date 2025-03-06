@@ -2,8 +2,12 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, LineChart, PieChart, Battery, Home, PieChartIcon } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar, PieChart as RechartsPieChart, Pie, Cell } from "recharts";
+import { Battery, Home, PieChart as PieChartIcon } from "lucide-react";
+import { 
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  BarChart as RechartsBarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
+  LineChart as RechartsLineChart, Line 
+} from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -135,14 +139,14 @@ const EnergyUsage = () => {
       case "monthly":
         return (
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={monthlyData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+            <RechartsLineChart data={monthlyData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip />
               <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
               <Line type="monotone" dataKey="usage" name="Energy (kWh)" stroke="#4ade80" strokeWidth={2} dot={{ r: 4 }} />
-            </LineChart>
+            </RechartsLineChart>
           </ResponsiveContainer>
         );
       default:
