@@ -15,6 +15,7 @@ import SustainableLiving from "./pages/SustainableLiving";
 import GreenCommute from "./pages/GreenCommute";
 import EnergySaver from "./pages/EnergySaver";
 import TreePlanting from "./pages/TreePlanting";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/green-commute" element={<GreenCommute />} />
               <Route path="/energy-saver" element={<EnergySaver />} />
               <Route path="/tree-planting" element={<TreePlanting />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
