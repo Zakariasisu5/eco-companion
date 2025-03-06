@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Leaf, Recycle, Zap, Car, TreePine, BarChart } from "lucide-react";
@@ -15,37 +14,48 @@ const features = [
     title: "Eco-Waste Management",
     description: "Track and minimize your household waste with reminders, recycling tips, and locating nearby disposal centers.",
     icon: Recycle,
-    color: "bg-blue-500/10 text-blue-500"
+    color: "bg-blue-500/10 text-blue-500",
+    path: "/eco-waste"
   },
   {
     title: "Sustainable Living Guide",
     description: "Access daily eco-friendly tips, product recommendations, and a carbon footprint calculator.",
     icon: Leaf,
-    color: "bg-green-500/10 text-green-500"
+    color: "bg-green-500/10 text-green-500",
+    path: "/sustainable-living"
   },
   {
     title: "Green Commute Planner",
     description: "Find eco-friendly transportation options and track emissions saved by green commuting.",
     icon: Car,
-    color: "bg-orange-500/10 text-orange-500"
+    color: "bg-orange-500/10 text-orange-500",
+    path: "/green-commute"
   },
   {
     title: "Energy Saver",
     description: "Monitor home energy usage, get tips for reduction, and receive notifications during peak times.",
     icon: Zap,
-    color: "bg-yellow-500/10 text-yellow-500"
+    color: "bg-yellow-500/10 text-yellow-500",
+    path: "/energy-saver"
   },
   {
     title: "Tree Planting Tracker",
     description: "Document trees planted, learn about species benefits, and participate in community planting events.",
     icon: TreePine,
-    color: "bg-emerald-500/10 text-emerald-500"
+    color: "bg-emerald-500/10 text-emerald-500",
+    path: "/tree-planting"
   }
 ];
 
 const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLElement>(null);
   const { isAuthenticated } = useAuth();
+  
+  // Scroll to features section
+  const scrollToFeatures = () => {
+    featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
   
   // Parallax effect on scroll
   useEffect(() => {
@@ -85,21 +95,10 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: "400ms" }}>
-              {isAuthenticated ? (
-                <Link to="/eco-waste">
-                  <Button size="lg" className="rounded-full w-full sm:w-auto">
-                    Go to Eco-Waste
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              ) : (
-                <Link to="/eco-waste">
-                  <Button size="lg" className="rounded-full w-full sm:w-auto">
-                    Get Started
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              )}
+              <Button size="lg" className="rounded-full w-full sm:w-auto" onClick={scrollToFeatures}>
+                Get Started
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
               {!isAuthenticated && (
                 <Link to="/login">
                   <Button variant="outline" size="lg" className="rounded-full w-full sm:w-auto">
@@ -120,7 +119,7 @@ const Index = () => {
       </div>
       
       {/* Features Section */}
-      <section className="py-20 bg-white" id="features">
+      <section className="py-20 bg-white" id="features" ref={featuresRef}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h6 className="text-primary font-medium mb-2">FEATURES</h6>
@@ -132,15 +131,17 @@ const Index = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="hover-scale border border-border/40 bg-white">
-                <CardContent className="p-6">
-                  <div className={`w-12 h-12 rounded-lg ${feature.color} flex items-center justify-center mb-4`}>
-                    <feature.icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-foreground/70">{feature.description}</p>
-                </CardContent>
-              </Card>
+              <Link to={feature.path} key={index}>
+                <Card className="hover-scale border border-border/40 bg-white h-full transition-all duration-300 hover:shadow-md">
+                  <CardContent className="p-6">
+                    <div className={`w-12 h-12 rounded-lg ${feature.color} flex items-center justify-center mb-4`}>
+                      <feature.icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                    <p className="text-foreground/70">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
@@ -189,7 +190,6 @@ const Index = () => {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="bg-gradient-to-r from-eco-900 to-eco-800 rounded-2xl p-8 md:p-12 text-white overflow-hidden relative">
-            {/* Background pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-0 left-0 w-full h-full">
                 <svg width="100%" height="100%" viewBox="0 0 400 400" fill="none">
@@ -212,19 +212,9 @@ const Index = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                {isAuthenticated ? (
-                  <Link to="/eco-waste">
-                    <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-                      Go to Eco-Waste
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link to="/eco-waste">
-                    <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-                      Get Started
-                    </Button>
-                  </Link>
-                )}
+                <Button size="lg" variant="secondary" className="w-full sm:w-auto" onClick={scrollToFeatures}>
+                  Get Started
+                </Button>
                 {!isAuthenticated && (
                   <Link to="/login">
                     <Button 
