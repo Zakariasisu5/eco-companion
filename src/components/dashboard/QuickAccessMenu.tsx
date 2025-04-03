@@ -31,6 +31,12 @@ const QuickAccessMenu = () => {
       path: "/tree-planting", 
       icon: <TreePine className="h-4 w-4 mr-2" />,
       color: "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+    },
+    { 
+      name: "Dashboard", 
+      path: "/dashboard", 
+      icon: <Zap className="h-4 w-4 mr-2" />,
+      color: "bg-purple-500/10 text-purple-500 hover:bg-purple-500/20"
     }
   ];
 

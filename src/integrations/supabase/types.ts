@@ -47,6 +47,54 @@ export type Database = {
           },
         ]
       }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          donation_date: string
+          donor_email: string | null
+          donor_name: string | null
+          donor_phone: string | null
+          id: string
+          is_anonymous: boolean
+          message: string | null
+          payment_method: string
+          payment_status: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          donation_date?: string
+          donor_email?: string | null
+          donor_name?: string | null
+          donor_phone?: string | null
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          payment_method: string
+          payment_status?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          donation_date?: string
+          donor_email?: string | null
+          donor_name?: string | null
+          donor_phone?: string | null
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          payment_method?: string
+          payment_status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       feed_consumption: {
         Row: {
           consumption_date: string
@@ -318,6 +366,57 @@ export type Database = {
           },
         ]
       }
+      partnership_requests: {
+        Row: {
+          contact_name: string
+          created_at: string
+          email: string
+          goals: string
+          id: string
+          message: string | null
+          organization_name: string
+          partnership_type: string
+          phone: string | null
+          resources: string | null
+          status: string
+          timeline: string | null
+          user_id: string | null
+          website: string | null
+        }
+        Insert: {
+          contact_name: string
+          created_at?: string
+          email: string
+          goals: string
+          id?: string
+          message?: string | null
+          organization_name: string
+          partnership_type: string
+          phone?: string | null
+          resources?: string | null
+          status?: string
+          timeline?: string | null
+          user_id?: string | null
+          website?: string | null
+        }
+        Update: {
+          contact_name?: string
+          created_at?: string
+          email?: string
+          goals?: string
+          id?: string
+          message?: string | null
+          organization_name?: string
+          partnership_type?: string
+          phone?: string | null
+          resources?: string | null
+          status?: string
+          timeline?: string | null
+          user_id?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -345,6 +444,66 @@ export type Database = {
           role?: string | null
           updated_at?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      project_proposals: {
+        Row: {
+          community_needs: string
+          contact_name: string
+          created_at: string
+          email: string
+          expected_outcomes: string
+          has_agreed_terms: boolean
+          id: string
+          location: string
+          organization_name: string | null
+          phone: string | null
+          project_description: string
+          project_duration: string | null
+          project_title: string
+          project_type: string
+          resources_needed: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          community_needs: string
+          contact_name: string
+          created_at?: string
+          email: string
+          expected_outcomes: string
+          has_agreed_terms?: boolean
+          id?: string
+          location: string
+          organization_name?: string | null
+          phone?: string | null
+          project_description: string
+          project_duration?: string | null
+          project_title: string
+          project_type: string
+          resources_needed?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          community_needs?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          expected_outcomes?: string
+          has_agreed_terms?: boolean
+          id?: string
+          location?: string
+          organization_name?: string | null
+          phone?: string | null
+          project_description?: string
+          project_duration?: string | null
+          project_title?: string
+          project_type?: string
+          resources_needed?: string | null
+          status?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -432,6 +591,54 @@ export type Database = {
           id?: string
           updated_at?: string | null
           user_role?: string | null
+        }
+        Relationships: []
+      }
+      volunteer_applications: {
+        Row: {
+          availability: string
+          created_at: string
+          email: string
+          experience: string | null
+          first_name: string
+          id: string
+          last_name: string
+          motivation: string | null
+          occupation: string | null
+          phone: string | null
+          skills: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          availability: string
+          created_at?: string
+          email: string
+          experience?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          motivation?: string | null
+          occupation?: string | null
+          phone?: string | null
+          skills?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          availability?: string
+          created_at?: string
+          email?: string
+          experience?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          motivation?: string | null
+          occupation?: string | null
+          phone?: string | null
+          skills?: string | null
+          status?: string
+          user_id?: string | null
         }
         Relationships: []
       }
